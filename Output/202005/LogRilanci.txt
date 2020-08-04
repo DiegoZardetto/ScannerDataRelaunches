@@ -1,0 +1,2381 @@
+
+###### Esecuzione Procedura Rilanci da Scanner Data - START
+###### Tue Aug 04 17:58:56 2020
+
+:::::: Parametri letti:
+InputDir_ANNO_MESE: ..\Input\202005 
+FileA: productTurnoverOutgoing.csv 
+FileB: productTurnover.csv 
+OutputDir_ANNO_MESE: ..\Output\202005 
+Dir_Packages: ..\..\3.6 
+
+:::::: Carico i sorgenti di MAERLIN
+Blocking.R 	 sourced
+BLP.R 	 sourced
+cloud.R 	 sourced
+clust.df.R 	 sourced
+conform.R 	 sourced
+Dedup.Clustering.EA.R 	 sourced
+Dedup.Fitting.R 	 sourced
+Distance.old.R 	 sourced
+Distance.R 	 sourced
+Distfun.library.R 	 sourced
+emailbody_OLD.R 	 sourced
+first.k.words.R 	 sourced
+getClusters.R 	 sourced
+getLinks.R 	 sourced
+getSolution.R 	 sourced
+NA.pct.R 	 sourced
+OTFS.R 	 sourced
+performance.R 	 sourced
+Reclink.Clustering.EA.R 	 sourced
+Reclink.Fitting.R 	 sourced
+screen.R 	 sourced
+trans.closure.R 	 sourced
+utillimi.R 	 sourced
+
+:::::: Leggo e preparo i dataset di input
+'data.frame':	207 obs. of  26 variables:
+ $ PRDKEY        : chr  "1096502" "1096598" "11406745" "11915644" ...
+ $ YEAR          : chr  "2020" "2020" "2020" "2020" ...
+ $ MONTH         : chr  "5" "5" "5" "5" ...
+ $ INDICODECR    : chr  "01020501" "01020501" "01020304" "01170602" ...
+ $ COICOP        : chr  "01.1.8.3.0.00" "01.1.8.3.0.00" "01.1.8.3.0.00" "01.1.9.9.0.00" ...
+ $ DESCRIZIONE   : chr  "WITOR'S WITOR'S NOBIO OVE UNI MINI CREMA LATTE LATTE RIPIENI SAC 1 01000.0 GR" "WITOR'S WITOR'S NOBIO OVE UNI MINI CREMA LATTE LATTE RIPIENI SAC 1 00500.0 GR" "HARIBO HARIBO NOBIO OVETTI CONFETTATI BUNTE KNUSPER-EIER SACCHETTO 01 0090.0 GR" "PL PL STD PL 01 BUDINO 2 C/ZUCC PREBUD STD 00200.0 C.G. GR CREME CARAMEL NOBIO PL 02.00" ...
+ $ MARCA         : chr  "WITOR'S" "WITOR'S" "HARIBO" "AUCHAN" ...
+ $ FORMATO       : chr  "1000GR" "500GR" "90GR" "200GR" ...
+ $ MERCATO       : chr  "Ovetti Pieni o Ripieni Latte (Ciocc. al)" "Ovetti Pieni o Ripieni Latte (Ciocc. al)" "Altri Fuori Pasto Dolci Bocconcini Conf" "Preparati per Dessert Specialita" ...
+ $ FAMIGLIA      : chr  "OVETTI PIENI O RIPIENI" "OVETTI PIENI O RIPIENI" "ALTRI FUORI PASTO DOLCI" "PREPARATI PER DESSERT" ...
+ $ EAN           : chr  "8003535007249" "8003535007201" "9002975833585" "8005476598077" ...
+ $ TURNOVERCURR  : chr  "2625.97" "2007.68" "10.24" "8.8" ...
+ $ QUANTITYCURR  : chr  "1121" "1119" "19" "13" ...
+ $ PRICECURR     : chr  "2.34" "1.79" "0.54" "0.68" ...
+ $ COUNTPDVCURR  : chr  "109" "168" "3" "4" ...
+ $ TURNOVERPREV  : chr  "10541.79" "11541.84" "174.31" "33.1" ...
+ $ QUANTITYPREV  : chr  "2522" "4282" "205" "33" ...
+ $ PRICEPREV     : chr  "4.18" "2.7" "0.85" "1" ...
+ $ COUNTPDVPREV  : chr  "242" "422" "21" "129" ...
+ $ VTURNOVER     : chr  "-75.0899040864976" "-82.6051998641464" "-94.1254087545178" "-73.4138972809668" ...
+ $ VPRICE        : chr  "-43.9578395237708" "-33.4365199448392" "-36.6162523513764" "-32.5122007901464" ...
+ $ DESC          : chr  "  NOBIO OVE UNI MINI CREMA LATTE LATTE RIPIENI SAC 1 01000.0 GR" "  NOBIO OVE UNI MINI CREMA LATTE LATTE RIPIENI SAC 1 00500.0 GR" "  NOBIO OVETTI CONFETTATI BUNTE KNUSPER-EIER SACCHETTO 01 0090.0 GR" "PL PL STD PL 01 BUDINO 2 C/ZUCC PREBUD STD 00200.0 C.G. GR CREME CARAMEL NOBIO PL 02.00" ...
+ $ DESCRIZIONE1  : chr  "WITOR'S WITOR'S NOBIO OVE UNI MINI CREMA LATTE LATTE RIPIENI SAC 1 01000.0 GR" "WITOR'S WITOR'S NOBIO OVE UNI MINI CREMA LATTE LATTE RIPIENI SAC 1 00500.0 GR" "HARIBO HARIBO NOBIO OVETTI CONFETTATI BUNTE KNUSPER-EIER SACCHETTO 01 0090.0 GR" "PL PL STD PL 01 BUDINO 2 C/ZUCC PREBUD STD 00200.0 C.G. GR CREME CARAMEL NOBIO PL 02.00" ...
+ $ UNITA         : chr  "GR" "GR" "GR" "GR" ...
+ $ QUANTITA      : chr  "1000" "500" "90" "200" ...
+ $ UNITA|QUANTITA: chr  "GR|1000" "GR|500" "GR|90" "GR|200" ...
+'data.frame':	166795 obs. of  26 variables:
+ $ PRDKEY        : chr  "10003971" "10004004" "10008204" "10008228" ...
+ $ YEAR          : chr  "2020" "2020" "2020" "2020" ...
+ $ MONTH         : chr  "5" "5" "5" "5" ...
+ $ INDICODECR    : chr  "03081001" "02030201" "02030102" "01170406" ...
+ $ COICOP        : chr  "01.1.1.4.3.00" "02.1.2.1.1.00" "02.1.2.1.2.00" "01.1.9.9.0.00" ...
+ $ DESCRIZIONE   : chr  "LA PIADAROLA LA PIADAROLA STD 05 PIADINE PIADINE STD FRESCA 1 0600 GR NOBIO" "CAVES COOP DE DONNAS CAVES COOP DE DONNAS ROSSO NO IGT FERMO SECCO ROSSO VET 01 0075.0 CL NOBIO A.V." "CAVE DES ONZE CAVE DES ONZE PINOT NERO DOC FERMO SECCO ROSSO VET 01 0075.0 CL NOBIO PINOT" "LO CONTE DECORI' ALCHERMES AROMI 03 FIALE 003.0 ML NOBIO" ...
+ $ MARCA         : chr  "LA PIADAROLA" "CAVES COOP DE DONNAS" "CAVE DES ONZE" "DECORI'" ...
+ $ FORMATO       : chr  "600GR" "750ML" "750ML" "3ML" ...
+ $ MERCATO       : chr  "Sostitutivi del Pane -Piadina" "Vino Comune Italiano Vetro 0-75 cl" "Vino Doc/Docg Italiano Rosso" "Ingredienti per Pasticceria Aromi" ...
+ $ FAMIGLIA      : chr  "SOSTITUTIVI DEL PANE FRESCO" "COMUNE ITALIANO" "DOC DOCG ITALIANO" "INGREDIENTI PER PASTICCERIA" ...
+ $ EAN           : chr  "8029806000016" "8032578016048" "8030999000035" "8009355008244" ...
+ $ TURNOVERCURR  : chr  "479.37" "143.47" "366.05" "30.14" ...
+ $ QUANTITYCURR  : chr  "216" "29" "39" "17" ...
+ $ PRICECURR     : chr  "2.22" "4.95" "9.39" "1.77" ...
+ $ COUNTPDVCURR  : chr  "4" "9" "5" "11" ...
+ $ TURNOVERPREV  : chr  "372.33" "201.44" "141.38" "67.87" ...
+ $ QUANTITYPREV  : chr  "182" "42" "16" "39" ...
+ $ PRICEPREV     : chr  "2.05" "4.8" "8.84" "1.74" ...
+ $ COUNTPDVPREV  : chr  "4" "13" "16" "29" ...
+ $ VTURNOVER     : chr  "28.7486906776247" "-28.7777998411438" "158.912151648041" "-55.5915721231767" ...
+ $ VPRICE        : chr  "8.48269307096154" "3.14939333351593" "6.22036990688851" "1.87815807035942" ...
+ $ DESC          : chr  "  STD 05 PIADINE PIADINE STD FRESCA 1 0600 GR NOBIO" "  ROSSO NO IGT FERMO SECCO ROSSO VET 01 0075.0 CL NOBIO A.V." "  PINOT NERO DOC FERMO SECCO ROSSO VET 01 0075.0 CL NOBIO PINOT" "LO CONTE  ALCHERMES AROMI 03 FIALE 003.0 ML NOBIO" ...
+ $ DESCRIZIONE1  : chr  "LA PIADAROLA LA PIADAROLA STD 05 PIADINE PIADINE STD FRESCA 1 0600 GR NOBIO" "CAVES COOP DE DONNAS CAVES COOP DE DONNAS ROSSO NO IGT FERMO SECCO ROSSO VET 01 0075.0 CL NOBIO A.V." "CAVE DES ONZE CAVE DES ONZE PINOT NERO DOC FERMO SECCO ROSSO VET 01 0075.0 CL NOBIO PINOT" "LO CONTE DECORI' ALCHERMES AROMI 03 FIALE 003.0 ML NOBIO" ...
+ $ UNITA         : chr  "GR" "ML" "ML" "ML" ...
+ $ QUANTITA      : chr  "600" "750" "750" "3" ...
+ $ UNITA|QUANTITA: chr  "GR|600" "ML|750" "ML|750" "ML|3" ...
+
+:::::: Setto il seme del generatore di numeri casuali di R per assicurare la piena riproducibilita' delle elaborazioni
+
+:::::: Eseguo MAERLIN
+
+###### Block-wise Record Linkage - START
+###### Tue Aug 04 17:59:16 2020
+
+:::::: Search Space Reduction: preparing blocks
+
+:::::: Analyzing block size distribution:
+
+> Number of blocks:  64 
+
+> Size deciles (pairs):
+   0%   10%   20%   30%   40%   50%   60%   70%   80%   90%  100% 
+   26   100   161   197   250   354   483   762  1241  1933 28000 
+
+> Size deciles (records):
+  0%  10%  20%  30%  40%  50%  60%  70%  80%  90% 100% 
+   5   10   13   14   16   19   22   28   35   44  167 
+
+> Reduction Ratio:  0.002262374 
+
+--------- Processing block 1 (size = 357, n ~ 19)  [MERCATO = Acqua Non Gassata 101-150 CL] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1 UNITA|QUANTITA    FormatSD       0            1        18.921
+2           DESC Three.grams       0            1         6.180
+3   DESCRIZIONE1   VSM.TfIdf       0            1         2.701
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [1, 357]
+- Pairs:		 357 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 2 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+ 0.0028 13.1941  5.8969  3.1786 13.7212  0.0000  0.0000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 2 (size = 298, n ~ 17)  [MERCATO = Affettati Bresaola] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams   0.000            1         9.270
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1         5.590
+3          MARCA    Equality   0.000            1         3.478
+4 UNITA|QUANTITA    FormatSD   0.003            1         2.982
+
+- Matrix dimension:	 [1, 298]
+- Pairs:		 298 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00336  3.91174 12.65022  9.23918  3.63135  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 3 (size = 902, n ~ 30)  [MERCATO = Affettati Prosc. Cotto] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        11.571
+2           DESC Three.grams       0            1        11.323
+3          MARCA    Equality       0            1         5.248
+4 UNITA|QUANTITA    FormatSD       0            1         4.048
+
+- Matrix dimension:	 [2, 451]
+- Pairs:		 902 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 6 
+- Unconditional expected number of Matches: 2 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00222  5.78454 20.66675 21.49354  4.95775  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 4 (size = 1178, n ~ 34)  [MERCATO = Affettati Salame] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        12.469
+2           DESC Three.grams   0.000            1         8.839
+3          MARCA    Equality   0.000            1         8.636
+4 UNITA|QUANTITA    FormatSD   0.003            1         3.572
+
+- Matrix dimension:	 [2, 589]
+- Pairs:		 1178 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 6 
+- Unconditional expected number of Matches: 2 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+ 0.0017  5.6009 24.2729 25.3102  4.5636  0.0000  0.0000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 2 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 2 
+
+--------- Processing block 5 (size = 1462, n ~ 38)  [MERCATO = Altri Fuori Pasto Dolci Bocconcini Conf] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        13.622
+2           DESC Three.grams   0.000            1         9.454
+3          MARCA    Equality   0.000            1         7.294
+4 UNITA|QUANTITA    FormatSD   0.012            1         3.980
+
+- Matrix dimension:	 [17, 86]
+- Pairs:		 1462 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 7 
+- Unconditional expected number of Matches: 8 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00536  2.19022 15.56742 16.31059  1.44704  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 4 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 4 
+
+--------- Processing block 6 (size = 171, n ~ 13)  [MERCATO = Avvolgenti Alimentari Alluminio] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality       0            1        13.077
+2           DESC Three.grams       0            1        10.900
+3   DESCRIZIONE1   VSM.TfIdf       0            1        10.465
+4 UNITA|QUANTITA    FormatSD       0            1         2.661
+
+- Matrix dimension:	 [1, 171]
+- Pairs:		 171 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00585  4.59503 27.52243 20.76541  3.74396  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 7 (size = 39, n ~ 6)  [MERCATO = Basi Pasta Brisee] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        25.920
+2   DESCRIZIONE1   VSM.TfIdf       0            1         8.354
+3 UNITA|QUANTITA    FormatSD       0            1         6.641
+4          MARCA    Equality       0            1         6.245
+
+- Matrix dimension:	 [1, 39]
+- Pairs:		 39 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+ 0.0256 23.5168 54.9327 36.7977 22.8178  0.0000  0.0000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 8 (size = 94, n ~ 10)  [MERCATO = Basi Pasta Sfoglia] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        21.613
+2   DESCRIZIONE1   VSM.TfIdf       0            1         8.798
+3 UNITA|QUANTITA    FormatSD       0            1         5.258
+4          MARCA    Equality       0            1         4.069
+
+- Matrix dimension:	 [1, 94]
+- Pairs:		 94 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+  pm   am   bm   au   bu   p0   p1 
+ 0.0  8.4 73.9 36.9 16.8  0.0  0.0 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 9 (size = 184, n ~ 14)  [MERCATO = Caffe Macinato Capsule A Modo Mio] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        18.773
+2           DESC Three.grams       0            1        11.846
+3          MARCA    Equality       0            1         6.134
+4 UNITA|QUANTITA    FormatSD       1            1         1.000
+
+- Matrix dimension:	 [1, 184]
+- Pairs:		 184 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 2 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00543 11.76640 41.38742 43.03303 10.12079  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 10 (size = 499, n ~ 22)  [MERCATO = Caffe Macinato Capsule Nespresso] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams   0.000            1        13.956
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1        11.817
+3          MARCA    Equality   0.000            1        11.203
+4 UNITA|QUANTITA    FormatSD   0.008            1         2.804
+
+- Matrix dimension:	 [1, 499]
+- Pairs:		 499 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 4 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+ 0.002  9.810 32.262 31.764  8.655  0.000  0.000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 11 (size = 1035, n ~ 32)  [MERCATO = Caramelle Dure e Ripiene] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        16.467
+2           DESC Three.grams   0.000            1        14.482
+3          MARCA    Equality   0.000            1        11.413
+4 UNITA|QUANTITA    FormatSD   0.003            1         3.243
+
+- Matrix dimension:	 [1, 1035]
+- Pairs:		 1035 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 6 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+9.66e-04 5.40e+00 3.20e+01 3.35e+01 3.92e+00 0.00e+00 0.00e+00 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 12 (size = 171, n ~ 13)  [MERCATO = Caramelle Gelee] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        14.453
+2   DESCRIZIONE1   VSM.TfIdf       0            1        11.433
+3          MARCA    Equality       0            1         5.918
+4 UNITA|QUANTITA    FormatSD       0            1         3.659
+
+- Matrix dimension:	 [1, 171]
+- Pairs:		 171 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  2.41 51.47 25.74  4.81  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 13 (size = 609, n ~ 25)  [MERCATO = Caramelle Gommose] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality   0.000            1        24.678
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1        21.570
+3           DESC Three.grams   0.000            1        11.781
+4 UNITA|QUANTITA    FormatSD   0.013            1         2.817
+
+- Matrix dimension:	 [1, 609]
+- Pairs:		 609 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00164  6.49809 45.43293 47.59598  4.33504  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 14 (size = 249, n ~ 16)  [MERCATO = Crescenza Normale] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        11.001
+2   DESCRIZIONE1   VSM.TfIdf       0            1        10.587
+3          MARCA    Equality       0            1         9.147
+4 UNITA|QUANTITA    FormatSD       0            1         6.039
+
+- Matrix dimension:	 [1, 249]
+- Pairs:		 249 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00402  5.06780 25.34869 26.47541  3.94108  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 15 (size = 1419, n ~ 38)  [MERCATO = Deo Azione Continua Grandi Ambienti] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        17.717
+2           DESC Three.grams   0.000            1        10.505
+3 UNITA|QUANTITA    FormatSD   0.005            1         6.881
+4          MARCA    Equality   0.000            1         4.781
+
+- Matrix dimension:	 [1, 1419]
+- Pairs:		 1419 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+ 0.000  0.227 14.571  7.285  0.445  0.000  0.000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 16 (size = 26, n ~ 5)  [MERCATO = Dessert Freschi Coppa con Panna Mono] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1         8.384
+2   DESCRIZIONE1   VSM.TfIdf       0            1         6.028
+3 UNITA|QUANTITA    FormatSD       0            1         2.447
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [1, 26]
+- Pairs:		 26 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+ 0.0361  6.7834 17.0690 12.7848  6.4676  0.0000  0.0000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 17 (size = 178, n ~ 13)  [MERCATO = Fresco Altri Piatti Pronti - Insalate] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        10.166
+2           DESC Three.grams       0            1         9.912
+3          MARCA    Equality       0            1         7.747
+4 UNITA|QUANTITA    FormatSD       0            1         6.718
+
+- Matrix dimension:	 [1, 178]
+- Pairs:		 178 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00562  2.85656 20.61587 21.60250  1.86994  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 18 (size = 163, n ~ 13)  [MERCATO = Frutta Ricoperta e Pralinata] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1         8.748
+2   DESCRIZIONE1   VSM.TfIdf       0            1         6.560
+3          MARCA    Equality       0            1         5.295
+4 UNITA|QUANTITA    FormatSD       0            1         3.285
+
+- Matrix dimension:	 [1, 163]
+- Pairs:		 163 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+0.00613 1.49060 7.94634 8.30500 1.13194 0.00000 0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 19 (size = 156, n ~ 12)  [MERCATO = Frutta Secca con guscio Noci] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        10.682
+2          MARCA    Equality       0            1         8.860
+3           DESC Three.grams       0            1         8.189
+4 UNITA|QUANTITA    FormatSD       0            1         2.150
+
+- Matrix dimension:	 [1, 156]
+- Pairs:		 156 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 2 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00641  3.38445 15.08908 15.73934  2.73419  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 20 (size = 222, n ~ 15)  [MERCATO = Gelati Vaschette - Fino a 299 Gr] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams   0.000            1         7.711
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1         5.973
+3          MARCA    Equality   0.000            1         3.752
+4 UNITA|QUANTITA    FormatSD   0.018            1         2.694
+
+- Matrix dimension:	 [1, 222]
+- Pairs:		 222 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+0.0045 2.0230 9.3131 5.5372 1.8380 0.0000 0.0000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 21 (size = 300, n ~ 17)  [MERCATO = Guanti Usa e Getta] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1         9.636
+2   DESCRIZIONE1   VSM.TfIdf       0            1         8.278
+3          MARCA    Equality       0            1         5.852
+4 UNITA|QUANTITA    FormatSD       0            1         2.074
+
+- Matrix dimension:	 [1, 300]
+- Pairs:		 300 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 4 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+0.00333 1.41665 7.04532 7.35802 1.10395 0.00000 0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 22 (size = 198, n ~ 14)  [MERCATO = Igiene Cura Prima Inf. Det. Liq./Solidi] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf    0.00            1        17.990
+2           DESC Three.grams    0.00            1         7.753
+3          MARCA    Equality    0.00            1         6.358
+4 UNITA|QUANTITA    FormatSD    0.02            1         2.417
+
+- Matrix dimension:	 [1, 198]
+- Pairs:		 198 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+ 0.0000  0.4851 20.2184 10.1092  0.9701  0.0000  0.0101 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 23 (size = 203, n ~ 14)  [MERCATO = Ingr. per Pasticceria Lieviti/Ammoniaca] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        14.346
+2   DESCRIZIONE1   VSM.TfIdf       0            1         9.998
+3 UNITA|QUANTITA    FormatSD       0            1         6.485
+4          MARCA    Equality       0            1         4.075
+
+- Matrix dimension:	 [1, 203]
+- Pairs:		 203 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  1.20 39.05 19.53  2.41  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 24 (size = 1778, n ~ 42)  [MERCATO = Ingredienti per Pasticceria Decorazioni] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality    0.00            1        17.239
+2   DESCRIZIONE1   VSM.TfIdf    0.00            1        14.227
+3           DESC Three.grams    0.00            1         9.240
+4 UNITA|QUANTITA    FormatSD    0.01            1         5.347
+
+- Matrix dimension:	 [2, 889]
+- Pairs:		 1778 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 6 
+- Unconditional expected number of Matches: 2 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00112  2.72089 25.83551 27.11966  1.43674  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 2 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 2 
+
+--------- Processing block 25 (size = 352, n ~ 19)  [MERCATO = Interi/Tranci Salame] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        18.952
+2           DESC Three.grams   0.000            1        16.918
+3          MARCA    Equality   0.000            1        13.285
+4 UNITA|QUANTITA    FormatSD   0.006            1         3.137
+
+- Matrix dimension:	 [1, 352]
+- Pairs:		 352 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  1.03 67.42 33.71  2.07  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 26 (size = 135, n ~ 12)  [MERCATO = Latte Uht Alta Digeribilita/Delattosato] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1         6.554
+2   DESCRIZIONE1   VSM.TfIdf       0            1         4.137
+3          MARCA    Equality       0            1         2.931
+4 UNITA|QUANTITA    FormatSD       0            1         2.102
+
+- Matrix dimension:	 [1, 135]
+- Pairs:		 135 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+0.00741 1.17441 8.49302 4.24651 2.34882 1.00000 0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 27 (size = 1911, n ~ 44)  [MERCATO = Merendine Croissant] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        29.391
+2           DESC Three.grams   0.000            1         8.368
+3 UNITA|QUANTITA    FormatSD   0.002            1         3.988
+4          MARCA    Equality   0.000            1         1.000
+
+- Matrix dimension:	 [3, 637]
+- Pairs:		 1911 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  2.58 77.85 38.93  5.16  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 28 (size = 758, n ~ 28)  [MERCATO = Mozzarelle Bufala] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        13.429
+2          MARCA    Equality       0            1        12.345
+3           DESC Three.grams       0            1         6.516
+4 UNITA|QUANTITA    FormatSD       0            1         2.177
+
+- Matrix dimension:	 [2, 379]
+- Pairs:		 758 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 5 
+- Unconditional expected number of Matches: 2 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00264  3.39358 19.96232 20.84045  3.27780  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 2 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 2 
+
+--------- Processing block 29 (size = 976, n ~ 31)  [MERCATO = Mozzarelle Latte Vaccino] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        12.276
+2          MARCA    Equality   0.000            1        10.457
+3           DESC Three.grams   0.000            1         9.893
+4 UNITA|QUANTITA    FormatSD   0.001            1         2.489
+
+- Matrix dimension:	 [1, 976]
+- Pairs:		 976 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 9 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00102  5.70338 23.85716 24.86570  4.69484  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 30 (size = 107, n ~ 10)  [MERCATO = Mozzarelle Light/Delattosata] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        10.337
+2           DESC Three.grams       0            1         9.568
+3 UNITA|QUANTITA    FormatSD       0            1         2.677
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [1, 107]
+- Pairs:		 107 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  2.06 27.59 13.81  3.72  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 31 (size = 256, n ~ 16)  [MERCATO = Nettari Pet >20 CL] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1         8.677
+2   DESCRIZIONE1   VSM.TfIdf       0            1         8.017
+3          MARCA    Equality       0            1         5.151
+4 UNITA|QUANTITA    FormatSD       0            1         3.719
+
+- Matrix dimension:	 [2, 128]
+- Pairs:		 256 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  3.03 28.50 14.25  6.05  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 32 (size = 1943, n ~ 44)  [MERCATO = Nutrizione Gatto Umido] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality   0.000            1        10.435
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1         7.021
+3           DESC Three.grams   0.000            1         5.974
+4 UNITA|QUANTITA    FormatSD   0.003            1         2.649
+
+- Matrix dimension:	 [1, 1943]
+- Pairs:		 1943 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+5.15e-04 5.79e-01 1.90e+01 9.50e+00 1.16e+00 1.00e+00 0.00e+00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 33 (size = 8840, n ~ 94)  [MERCATO = Ovetti Pieni o Ripieni Latte (Ciocc. al)] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        10.070
+2           DESC Three.grams       0            1         9.536
+3          MARCA    Equality       0            1         5.514
+4 UNITA|QUANTITA    FormatSD       0            1         3.839
+
+- Matrix dimension:	 [68, 130]
+- Pairs:		 8840 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 101 
+- Unconditional expected number of Matches: 68 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00769  3.68464 15.33561 15.98288  3.03736  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 27 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 27 
+
+--------- Processing block 34 (size = 1338, n ~ 37)  [MERCATO = Pasta Fresca non Ripiena Pasta all Uovo] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        13.085
+2          MARCA    Equality   0.000            1        12.967
+3           DESC Three.grams   0.000            1         6.840
+4 UNITA|QUANTITA    FormatSD   0.003            1         5.326
+
+- Matrix dimension:	 [2, 669]
+- Pairs:		 1338 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 8 
+- Unconditional expected number of Matches: 2 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00149  3.23586 20.40979 21.36389  2.28175  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 2 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 2 
+
+--------- Processing block 35 (size = 27, n ~ 5)  [MERCATO = Pasta Fresca Ripena Base Pesce] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        16.115
+2   DESCRIZIONE1   VSM.TfIdf       0            1         7.835
+3          MARCA    Equality       0            1         5.196
+4 UNITA|QUANTITA    FormatSD       0            1         2.930
+
+- Matrix dimension:	 [1, 27]
+- Pairs:		 27 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  2.51 40.60 20.30  5.02  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 36 (size = 311, n ~ 18)  [MERCATO = Pasta Fresca Ripena Prosciutto Crudo] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        10.930
+2          MARCA    Equality   0.000            1        10.215
+3           DESC Three.grams   0.000            1         5.607
+4 UNITA|QUANTITA    FormatSD   0.003            1         2.396
+
+- Matrix dimension:	 [1, 311]
+- Pairs:		 311 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00322  2.74409 13.42382 14.01714  2.15077  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 37 (size = 3615, n ~ 60)  [MERCATO = Pasticceria Altra Unitipo] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        15.359
+2          MARCA    Equality       0            1        11.405
+3           DESC Three.grams       0            1         6.859
+4 UNITA|QUANTITA    FormatSD       0            1         5.123
+
+- Matrix dimension:	 [3, 1205]
+- Pairs:		 3615 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 20 
+- Unconditional expected number of Matches: 3 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00083  3.26600 23.40955 24.52863  2.14692  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 3 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 3 
+
+--------- Processing block 38 (size = 802, n ~ 28)  [MERCATO = Pasticceria Ric./Gocce Ciocc/Glassa] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        24.655
+2          MARCA    Equality   0.000            1        11.598
+3           DESC Three.grams   0.000            1         7.252
+4 UNITA|QUANTITA    FormatSD   0.012            1         2.533
+
+- Matrix dimension:	 [2, 401]
+- Pairs:		 802 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 2 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00125  3.54695 34.14323 26.27692  2.35063  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 39 (size = 406, n ~ 20)  [MERCATO = Pasticceria Ripiena] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        21.990
+2          MARCA    Equality       0            1        20.149
+3           DESC Three.grams       0            1        13.739
+4 UNITA|QUANTITA    FormatSD       0            1         4.902
+
+- Matrix dimension:	 [1, 406]
+- Pairs:		 406 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00246  8.36541 63.38844 56.59707  5.82690  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 40 (size = 180, n ~ 13)  [MERCATO = Praline - Cioccolatini Impulso inf 70 gr] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        13.215
+2   DESCRIZIONE1   VSM.TfIdf       0            1         8.354
+3          MARCA    Equality       0            1         4.839
+4 UNITA|QUANTITA    FormatSD       0            1         3.319
+
+- Matrix dimension:	 [3, 60]
+- Pairs:		 180 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 3 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+ 0.0161  2.2367 11.9034 12.4405  1.6997  0.0000  0.0000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 41 (size = 2195, n ~ 47)  [MERCATO = Praline - Cioccolatini Sacchetto] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        19.731
+2           DESC Three.grams   0.000            1        18.435
+3          MARCA    Equality   0.000            1         7.665
+4 UNITA|QUANTITA    FormatSD   0.005            1         4.324
+
+- Matrix dimension:	 [5, 439]
+- Pairs:		 2195 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  1.79 78.44 39.22  3.59  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 42 (size = 231, n ~ 15)  [MERCATO = Praline - Cioccolatini Scatole Classiche] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        16.332
+2           DESC Three.grams       0            1        13.535
+3 UNITA|QUANTITA    FormatSD       0            1         3.837
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [1, 231]
+- Pairs:		 231 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+  pm   am   bm   au   bu   p0   p1 
+ 0.0  1.5 45.9 23.0  3.0  0.0  0.0 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 43 (size = 53, n ~ 7)  [MERCATO = Preparati per Dessert Specialita] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1         3.632
+2   DESCRIZIONE1   VSM.TfIdf       0            1         3.448
+3 UNITA|QUANTITA    FormatSD       0            1         2.546
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [1, 53]
+- Pairs:		 53 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+0.0189 0.7743 5.9656 1.7654 0.7222 0.0000 0.0000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 44 (size = 158, n ~ 13)  [MERCATO = Preparati Per Torte Nr] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        13.072
+2           DESC Three.grams   0.000            1         7.355
+3          MARCA    Equality   0.000            1         3.917
+4 UNITA|QUANTITA    FormatSD   0.051            1         2.436
+
+- Matrix dimension:	 [1, 158]
+- Pairs:		 158 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+ 0.000  0.982 21.100 10.550  1.962  0.000  0.000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 45 (size = 104, n ~ 10)  [MERCATO = Quadrettati Pancetta Affumicata] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        19.465
+2           DESC Three.grams       0            1        10.978
+3          MARCA    Equality       0            1        10.198
+4 UNITA|QUANTITA    FormatSD       0            1         4.470
+
+- Matrix dimension:	 [1, 104]
+- Pairs:		 104 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  2.82 95.11 47.55  5.65  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 46 (size = 659, n ~ 26)  [MERCATO = Sacc/Vasc per Alimenti Vaschette] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality       0            1        25.671
+2   DESCRIZIONE1   VSM.TfIdf       0            1        19.530
+3           DESC Three.grams       0            1        15.029
+4 UNITA|QUANTITA    FormatSD       0            1         2.131
+
+- Matrix dimension:	 [1, 659]
+- Pairs:		 659 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00152  4.86046 65.35643 44.43207  2.77774  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 47 (size = 499, n ~ 22)  [MERCATO = Sacchetti Spazzatura Piccoli] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality   0.000            1        22.338
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1        18.111
+3           DESC Three.grams   0.000            1         6.299
+4 UNITA|QUANTITA    FormatSD   0.002            1         2.368
+
+- Matrix dimension:	 [1, 499]
+- Pairs:		 499 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+ 0.002  2.574 21.407 22.454  1.528  0.000  0.000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 48 (size = 399, n ~ 20)  [MERCATO = Secondi Piatti Base Pesce - Sushi] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams   0.000            1        17.670
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1        16.567
+3          MARCA    Equality   0.000            1        14.142
+4 UNITA|QUANTITA    FormatSD   0.033            1         4.377
+
+- Matrix dimension:	 [1, 399]
+- Pairs:		 399 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 2 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00251  8.42907 46.90818 49.04591  6.29134  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 49 (size = 418, n ~ 20)  [MERCATO = Snacks Salati Tramezzini / Toast] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        13.848
+2          MARCA    Equality       0            1        11.832
+3           DESC Three.grams       0            1         8.526
+4 UNITA|QUANTITA    FormatSD       0            1         2.575
+
+- Matrix dimension:	 [1, 418]
+- Pairs:		 418 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00239  3.24779 18.15724 18.98554  2.41949  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 50 (size = 109, n ~ 10)  [MERCATO = Sostitutivi del Latte Uht Riso] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        10.363
+2   DESCRIZIONE1   VSM.TfIdf       0            1         6.878
+3          MARCA    Equality       0            1         6.084
+4 UNITA|QUANTITA    FormatSD       0            1         2.502
+
+- Matrix dimension:	 [1, 109]
+- Pairs:		 109 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 2 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00917  4.74223 22.19849 11.21449  4.40159  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 51 (size = 643, n ~ 25)  [MERCATO = Specialita Specialita Regionali] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1         9.138
+2          MARCA    Equality   0.000            1         9.014
+3           DESC Three.grams   0.000            1         6.974
+4 UNITA|QUANTITA    FormatSD   0.009            1         2.613
+
+- Matrix dimension:	 [1, 643]
+- Pairs:		 643 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+ 0.000  0.602 21.800 10.901  1.165  0.000  0.000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 52 (size = 919, n ~ 30)  [MERCATO = Sughi Pronti Base Pomod (Olio)] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1 UNITA|QUANTITA    FormatSD       0            1         9.275
+2   DESCRIZIONE1   VSM.TfIdf       0            1         8.594
+3           DESC Three.grams       0            1         7.762
+4          MARCA    Equality       0            1         5.222
+
+- Matrix dimension:	 [1, 919]
+- Pairs:		 919 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 3 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00109  3.10751 15.50322 16.19187  2.41886  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 53 (size = 244, n ~ 16)  [MERCATO = Sughi Pronti Freschi Pesto] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality       0            1        11.068
+2   DESCRIZIONE1   VSM.TfIdf       0            1         8.388
+3           DESC Three.grams       0            1         7.440
+4 UNITA|QUANTITA    FormatSD       0            1         3.177
+
+- Matrix dimension:	 [1, 244]
+- Pairs:		 244 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 2 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+     pm      am      bm      au      bu      p0      p1 
+ 0.0041  3.8063 34.6472 15.1565  3.2089  0.0000  0.0000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 54 (size = 234, n ~ 15)  [MERCATO = Surg Dolci/Pasticceria - Altri Dolci] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        42.711
+2           DESC Three.grams   0.000            1        15.025
+3 UNITA|QUANTITA    FormatSD   0.009            1         5.193
+4          MARCA    Equality   0.000            1         1.000
+
+- Matrix dimension:	 [1, 234]
+- Pairs:		 234 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+  0.00   1.18 102.46  51.23   2.35   0.00   0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 55 (size = 355, n ~ 19)  [MERCATO = Surg Pesce Naturale - Crostacei] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        13.039
+2   DESCRIZIONE1   VSM.TfIdf       0            1        12.623
+3          MARCA    Equality       0            1         9.461
+4 UNITA|QUANTITA    FormatSD       0            1         4.635
+
+- Matrix dimension:	 [1, 355]
+- Pairs:		 355 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  1.80 61.01 30.50  3.59  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 56 (size = 1335, n ~ 37)  [MERCATO = Surg Pizzeria - Pizza Classica] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        12.253
+2           DESC Three.grams   0.000            1        10.203
+3          MARCA    Equality   0.000            1         5.074
+4 UNITA|QUANTITA    FormatSD   0.009            1         3.539
+
+- Matrix dimension:	 [3, 445]
+- Pairs:		 1335 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 8 
+- Unconditional expected number of Matches: 4 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00225  3.60115 14.77182 15.39241  2.98056  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 3 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 3 
+
+--------- Processing block 57 (size = 679, n ~ 26)  [MERCATO = Surg Vegetali Naturali/Frutta - Altri Vegetali Naturali] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality   0.000            1        26.058
+2   DESCRIZIONE1   VSM.TfIdf   0.000            1        17.951
+3           DESC Three.grams   0.000            1        13.781
+4 UNITA|QUANTITA    FormatSD   0.003            1         2.213
+
+- Matrix dimension:	 [1, 679]
+- Pairs:		 679 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 1 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00147  4.74856 38.03011 39.87909  2.89958  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 58 (size = 28000, n ~ 167)  [MERCATO = Torte Pronte Altre] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        21.885
+2          MARCA    Equality   0.000            1        14.941
+3           DESC Three.grams   0.000            1         9.158
+4 UNITA|QUANTITA    FormatSD   0.001            1         3.301
+
+- Matrix dimension:	 [40, 700]
+- Pairs:		 28000 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 90 
+- Unconditional expected number of Matches: 40 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+ 0.00143  2.68101 26.06255 27.36153  1.38203  0.00000  0.00000 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 21 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 21 
+
+--------- Processing block 59 (size = 45, n ~ 7)  [MERCATO = Uova/Sfere di Cioccolato inf 31 gr Singolo] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        29.103
+2           DESC Three.grams       0            1        13.334
+3 UNITA|QUANTITA    FormatSD       0            1         6.793
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [3, 15]
+- Pairs:		 45 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+  0.0  15.5 260.3 130.2  31.1   0.0   0.0 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 60 (size = 2254, n ~ 47)  [MERCATO = Vino Doc/Docg Italiano Bianco] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality       0            1        23.754
+2   DESCRIZIONE1   VSM.TfIdf       0            1        22.508
+3           DESC Three.grams       0            1        15.878
+4 UNITA|QUANTITA    FormatSD       0            1         3.790
+
+- Matrix dimension:	 [1, 2254]
+- Pairs:		 2254 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 4 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+4.44e-04 6.59e+00 4.39e+01 4.60e+01 4.51e+00 0.00e+00 0.00e+00 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 61 (size = 3872, n ~ 62)  [MERCATO = Vino Doc/Docg Italiano Rosso] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1          MARCA    Equality       0            1        44.006
+2   DESCRIZIONE1   VSM.TfIdf       0            1        26.262
+3           DESC Three.grams       0            1        10.861
+4 UNITA|QUANTITA    FormatSD       0            1         3.405
+
+- Matrix dimension:	 [1, 3872]
+- Pairs:		 3872 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 2 
+- Unconditional expected number of Matches: 1 
+- Fitted parameters:
+
+      pm       am       bm       au       bu       p0       p1 
+2.58e-04 4.12e+00 1.23e+02 7.90e+01 7.13e+00 0.00e+00 0.00e+00 
+
+- Matching constraints: 1:1 
+
+**** Duplicates in MAP solution: One-to-One Reduction 
+
+> Running the Clustering EA 
+Clustering solution for Record Linkage
+- Declared Matches: 1 
+- Matching constraints: 1:1 
+
+> Decoding block solution
+
+> Matches in the block: 1 
+
+--------- Processing block 62 (size = 419, n ~ 20)  [MERCATO = Yogurt Intero - Altri Gusti] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf   0.000            1        61.140
+2           DESC Three.grams   0.000            1        11.242
+3 UNITA|QUANTITA    FormatSD   0.002            1         2.444
+4          MARCA    Equality   0.000            1         1.000
+
+- Matrix dimension:	 [1, 419]
+- Pairs:		 419 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+  0.00   7.31 259.67 129.84  14.61   0.00   0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 63 (size = 98, n ~ 10)  [MERCATO = Yogurt Magro - Altri Gusti] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1   DESCRIZIONE1   VSM.TfIdf       0            1        15.348
+2           DESC Three.grams       0            1        14.132
+3 UNITA|QUANTITA    FormatSD       0            1         4.957
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [1, 98]
+- Pairs:		 98 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+   pm    am    bm    au    bu    p0    p1 
+ 0.00  4.88 79.94 39.97  9.75  0.00  0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+--------- Processing block 64 (size = 342, n ~ 18)  [MERCATO = Yogurt Magro - Frutta] ---------
+
+> Computing the Distance Matrix 
+Matrix of pairwise distances for Record Linkage
+- Matching variables and Distance functions:
+
+        Variable    Distance NA.freq Input.Weight Output.Weight
+1           DESC Three.grams       0            1        33.811
+2   DESCRIZIONE1   VSM.TfIdf       0            1        25.893
+3 UNITA|QUANTITA    FormatSD       0            1         7.853
+4          MARCA    Equality       0            1         1.000
+
+- Matrix dimension:	 [1, 342]
+- Pairs:		 342 
+
+> Fitting the Mixture 
+Fitted inflated-beta mixture model for Record Linkage
+- MAP expected number of Matches given observed distances: 0 
+- Unconditional expected number of Matches: 0 
+- Fitted parameters:
+
+    pm     am     bm     au     bu     p0     p1 
+  0.00   7.85 221.01 110.50  15.69   0.00   0.00 
+
+- Matching constraints: 1:1 
+
+* 1:1 RL solution found *
+**** No Duplicates in MAP solution 
+
+> Decoding block solution
+
+> Matches in the block: 0 
+
+:::::: Reconstructing global solution from blocks
+
+:::::: Reconstructing Matches data frame
+
+:::::: Elapsed time: 117.05 
+
+###### Tue Aug 04 18:01:13 2020
+###### Block-wise Record Linkage - END
+
+
+
+:::::: Scrittura file di output
+
+:::::: Applico le regole di esclusione deterministiche:
+:::::: REGOLA 1: I rilanci non possono avere valori diversi in UNITA
+:::::: REGOLA 2: I rilanci non possono avere una differenza relativa in QUANTITA superiore al 25%
+:::::: REGOLA 3: I rilanci non possono avere valori mancanti in QUANTITA
+
+:::::: Salvo il workspace R
+
+
+******************************************
+ Prodotti uscenti:      207 
+ Nuovi in anagrafica:   166795 
+ Mercati interessati:   64 
+ Rilanci dal modello:   99 
+ Scarti per regole:     21 
+
+ Rilanci accettati:     78 
+******************************************
+
+
+###### Esecuzione Procedura Rilanci da Scanner Data - END
+###### Tue Aug 04 18:01:19 2020
