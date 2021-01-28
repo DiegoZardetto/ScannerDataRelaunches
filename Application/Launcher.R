@@ -1,9 +1,8 @@
-# setwd("C:\\Notshare\\ISTAT\\ScannerDataRilanci\\PROGETTO_Rilanci_Scanner_Data\\Application")
 # START message
+release="3";
 source("file.param")
 
-# This is only for Istat production server
-if (Sys.info()[["nodename"]] == "SERVER-R") .libPaths( Dir_Packages )
+.libPaths( Dir_Packages )
 
 if (!file.exists(OutputDir_ANNO_MESE)) {
     dir.create(file.path(OutputDir_ANNO_MESE))
@@ -26,6 +25,7 @@ fileinpB <- paste(InputDir_ANNO_MESE, FileB, sep = '\\')
 
 # Build the blocks
 cat("\n:::::: Parametri letti:\n")
+cat("Release: ", release, "\n")
 cat("InputDir_ANNO_MESE:", InputDir_ANNO_MESE, "\n")
 cat("FileA:", FileA, "\n")
 cat("FileB:", FileB, "\n")
@@ -34,7 +34,7 @@ cat("Dir_Packages:", Dir_Packages, "\n")
 
 cat("\n:::::: Carico i sorgenti di MAERLIN\n")
 source(".\\installSD.R")
-installSD("..\\MAERLIN")
+installSD("..\\Sources")
 
 cat("\n:::::: Leggo e preparo i dataset di input\n")
 
@@ -42,7 +42,7 @@ cat("\n:::::: Leggo e preparo i dataset di input\n")
 mkUnit  <- function(x) gsub(" ", "", gsub("[0-9]*[.]*", "", toupper(x)))
 mkValue <- function(x) gsub(" ", "", gsub("[A-Z]", "", toupper(x)))
 
-nast <- c("", "NA", "na", "Na", "nA", "NAN", "nan", "NaN", "nAn", "NR", "nr", "NOT IN RULE", "NOTINRULE", "not in rule","notinrule", "BADVALUE", "BAD VALUE", "Bad Value", "bad value", "BadValue", "badvalue")
+nast <- c("", "NA", "na", "Na", "nA", "NAN", "nan", "NaN", "nAn", "NR", "nr", "NOT IN RULE", "NOTINRULE", "not in rule","notinrule", "BADVALUE", "BAD VALUE", "Bad Value", "bad value", "BadValue", "badvalue","ND","\\N")
 
 # Read the input files as they are
 # A <- read.table(fileinpA, header = TRUE, sep = ";", na.strings = nast, stringsAsFactors = FALSE, encoding = "UTF-8", quote = "", comment.char = "")
@@ -56,7 +56,7 @@ names(B) <- toupper(names(B))
 invisible(sapply(names(B), function(col) B[[col]] <<- as.character(B[[col]])))
 
 # The following columns must exist in both input files
-mandatory.vars <- c("PRDKEY", "MERCATO", "MARCA", "DESCRIZIONE", "FORMATO")
+mandatory.vars <- c("PRDKEY", "MERCATO", "MARCA", "DESCRIZIONE", "FORMATO","NUM_PEZZI")
   # Check for missing mandatory variables in file A
 A.miss.vars <- mandatory.vars[!(mandatory.vars %in% names(A))]
 if (length(A.miss.vars) > 0) stop("Missing mandatory variables in file A: ", paste(A.miss.vars, collapse = ", "))
@@ -98,7 +98,7 @@ set.seed(51713773)
 #------------------------------------------------------------------------------#
 cat("\n:::::: Eseguo MAERLIN\n")
 
-res.ab <- B.maerlin(A, B, block.vars = "MERCATO", match.vars = c("MARCA", "DESCRIZIONE1", "DESC", "UNITA|QUANTITA"), dist.funs = c("Equality", "VSM.TfIdf", "Three.grams", "FormatSD"), weights = c(1, 1, 1, 1))
+res.ab <- B.maerlin(A, B, block.vars = "MERCATO", match.vars = c("MARCA", "DESCRIZIONE1", "DESC", "UNITA|QUANTITA", "NUM_PEZZI"), dist.funs = c("Equality", "VSM.TfIdf", "Three.grams", "FormatSD", "Equality"), weights = c(1, 1, 1, 1, 1))
 
 cat("\n:::::: Scrittura file di output\n")
 
@@ -111,7 +111,10 @@ write.table(PRDK.links, file = "ID_Links.csv", sep = ";", row.names = FALSE, quo
 cat("\n:::::: Applico le regole di esclusione deterministiche:")
 cat("\n:::::: REGOLA 1: I rilanci non possono avere valori diversi in UNITA")
 cat("\n:::::: REGOLA 2: I rilanci non possono avere una differenza relativa in QUANTITA superiore al 25%")
-cat("\n:::::: REGOLA 3: I rilanci non possono avere valori mancanti in QUANTITA\n")
+cat("\n:::::: REGOLA 3: I rilanci non possono avere valori mancanti in QUANTITA")
+cat("\n:::::: REGOLA 4: I rilanci non possono avere valori diversi in MARCA")
+cat("\n:::::: REGOLA 5: I rilanci non possono avere valori diversi in NUM_PEZZI")
+cat("\n")
 
 alives.ab <- KillLinks(links.ab, Q.th = 0.25)
 write.table(alives.ab, file = "Links_ACCETTATI.csv", sep = ";", row.names = FALSE)
@@ -135,7 +138,7 @@ if (length(miss.ELAB.vars) > 0) cat("\nERROR: Missing required variables in outp
 
 ELAB.file.name <- "Links_ACCETTATI_ELAB.csv"
 # In case the ELAB file already exists, delete it
-if (file.exists(ELAB.file.name)) invisible(file.remove(ELAB.file.name))
+if (file.exists(ELAB.file.name)) file.remove(ELAB.file.name)
 
 # Only in case *all* the ELAB vars are present, write the ELAB csv file (no header, no quotes)
 if (length(miss.ELAB.vars) == 0) {

@@ -283,6 +283,18 @@ KillLinks <- function(links, Q.th = 0.25, ...){
           toKill <- TRUE
           Rule <- paste(Rule, 3, sep = "|")
         }
+	  ### Release 2 - Jan 2021
+	  ### Rule 4: Relaunches cannot have different MARCA
+      if (!is.na(r.a$MARCA) && !is.na(r.b$MARCA) && r.a$MARCA != r.b$MARCA) {
+          toKill <- TRUE
+          Rule <- paste(Rule, 4, sep = "|")
+        }
+	  ### Release 3 - Feb 2021
+	  ### Rule 4: Relaunches cannot have different NUM_PEZZI
+      if (!is.na(r.a$NUM_PEZZI) && !is.na(r.b$NUM_PEZZI) && r.a$NUM_PEZZI != r.b$NUM_PEZZI) {
+          toKill <- TRUE
+          Rule <- paste(Rule, 5, sep = "|")
+        }
       ### User Defined Kill Rules - END
       # --- Application Task: Relaunches on Scanner Data
       if (toKill) {

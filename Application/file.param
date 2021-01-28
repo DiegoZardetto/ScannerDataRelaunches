@@ -1,5 +1,5 @@
-InputDir_ANNO_MESE <- "..\\Input\\202005"
+InputDir_ANNO_MESE <- "..\\Input\\202012"
 FileA <- "productTurnoverOutgoing.csv"
 FileB <- "productTurnover.csv"
-OutputDir_ANNO_MESE <- "..\\Output\\202005"
+OutputDir_ANNO_MESE <- "..\\Output\\202012"
 Dir_Packages <- "..\\..\\3.6"
